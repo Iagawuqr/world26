@@ -67,7 +67,7 @@ function PreviewPage() {
         {data && (
           <ProtectedViewer
             url={data.url}
-            mimeType={data.mimeType}
+            mimeType={data.mimeType ?? ""}
             name={data.name}
             watermark={data.watermark}
           />
