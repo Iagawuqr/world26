@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.has_folder_access(uuid, uuid) FROM PUBLIC, anon, authenticated;
