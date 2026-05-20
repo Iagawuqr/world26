@@ -3,9 +3,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Copy, Ban, KeyRound, Sparkles } from "lucide-react";
+import { Copy, Ban, KeyRound, Sparkles, Mail } from "lucide-react";
 import { generateKeys, listKeys, revokeKey } from "@/lib/keys.functions";
 import { adminListFolders } from "@/lib/folders.functions";
+import { sendPlainKeyByEmail } from "@/lib/email.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/keys")({
   component: AdminKeys,
@@ -16,11 +17,13 @@ function AdminKeys() {
   const gen = useServerFn(generateKeys);
   const rev = useServerFn(revokeKey);
   const folders = useServerFn(adminListFolders);
+  const sendMail = useServerFn(sendPlainKeyByEmail);
   const qc = useQueryClient();
   const [folderId, setFolderId] = useState("");
   const [count, setCount] = useState(1);
   const [days, setDays] = useState<string>("");
   const [generated, setGenerated] = useState<string[]>([]);
+  const [mailTo, setMailTo] = useState("");
 
   const foldersQ = useQuery({ queryKey: ["admin-folders"], queryFn: () => folders() });
   const keysQ = useQuery({ queryKey: ["admin-keys"], queryFn: () => list({ data: {} }) });
@@ -120,16 +123,37 @@ function AdminKeys() {
             </p>
             <div className="max-h-64 overflow-y-auto space-y-1.5">
               {generated.map((k) => (
-                <code
-                  key={k}
-                  onClick={() => {
-                    navigator.clipboard.writeText(k);
-                    toast.success("Copiada");
-                  }}
-                  className="block px-3 py-2 rounded-lg bg-background/60 font-mono text-sm tracking-wider cursor-pointer hover:bg-background"
-                >
-                  {k.match(/.{1,4}/g)?.join("-")}
-                </code>
+                <div key={k} className="flex items-center gap-2">
+                  <code
+                    onClick={() => {
+                      navigator.clipboard.writeText(k);
+                      toast.success("Copiada");
+                    }}
+                    className="flex-1 px-3 py-2 rounded-lg bg-background/60 font-mono text-sm tracking-wider cursor-pointer hover:bg-background"
+                  >
+                    {k.match(/.{1,4}/g)?.join("-")}
+                  </code>
+                  <button
+                    onClick={async () => {
+                      const to = prompt("Enviar para qual e-mail?", mailTo);
+                      if (!to) return;
+                      setMailTo(to);
+                      try {
+                        const folderName = foldersQ.data?.folders?.find(
+                          (f: any) => f.id === folderId,
+                        )?.name;
+                        await sendMail({ data: { plainKey: k, recipient: to, folderName } });
+                        toast.success(`Enviada para ${to}`);
+                      } catch (e: any) {
+                        toast.error(e.message ?? "Falha no envio");
+                      }
+                    }}
+                    className="p-2 rounded-md glass hover:bg-white/5"
+                    title="Enviar por e-mail"
+                  >
+                    <Mail className="h-4 w-4 text-gold" />
+                  </button>
+                </div>
               ))}
             </div>
           </div>
