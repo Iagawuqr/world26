@@ -1,7 +1,8 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { LayoutGrid, Folder, Key, Users, ShieldCheck } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { checkIsAdmin } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — Copa 2026" }] }),
@@ -16,20 +17,32 @@ const NAV: { to: string; label: string; icon: typeof LayoutGrid; exact?: boolean
 ];
 
 function AdminLayout() {
-  const { role, loading } = useAuth();
   const { pathname } = useLocation();
-  const [ready, setReady] = useState(false);
+  const fn = useServerFn(checkIsAdmin);
+  const [allowed, setAllowed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!loading) {
-      if (role !== "admin") window.location.href = "/dashboard";
-      else setReady(true);
-    }
-  }, [role, loading]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const { isAdmin } = await fn();
+        if (cancelled) return;
+        if (!isAdmin) {
+          window.location.href = "/dashboard";
+        } else {
+          setAllowed(true);
+        }
+      } catch {
+        if (!cancelled) window.location.href = "/dashboard";
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [fn]);
 
-  if (!ready) {
-    return <div className="text-sm text-muted-foreground">Verificando permissões...</div>;
-  }
+  // Sem flash: nada na tela até a verificação concluir
+  if (allowed !== true) return <div className="min-h-[60vh]" aria-hidden />;
 
   return (
     <div className="space-y-6">

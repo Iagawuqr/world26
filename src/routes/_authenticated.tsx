@@ -23,16 +23,7 @@ function AuthLayout() {
     });
   }, []);
 
-  if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="glass rounded-2xl px-6 py-4 text-sm text-muted-foreground">
-          Carregando sessão...
-        </div>
-      </div>
-    );
-  }
-  if (!authed) return null;
+  if (checking || !authed) return <div className="min-h-screen" aria-hidden />;
 
   return (
     <div className="min-h-screen">
