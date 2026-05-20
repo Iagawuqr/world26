@@ -10,9 +10,13 @@ export function SiteFooter() {
             Copa do Mundo FIFA 2026 · Hub não-oficial
           </span>
         </div>
-        <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+        <div className="text-xs text-muted-foreground flex flex-wrap items-center justify-center gap-1.5">
           Desenvolvido com <Heart className="h-3 w-3 text-primary fill-primary" /> por
           <span className="font-semibold text-foreground">Danilo Felix</span>
+          <span className="opacity-40">·</span>
+          <span className="font-mono text-[11px] tracking-wider px-2 py-0.5 rounded-full glass text-gold">
+            by_wjs
+          </span>
           <span className="opacity-50">— Todos os direitos reservados</span>
         </div>
       </div>
