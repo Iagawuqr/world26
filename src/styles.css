@@ -56,61 +56,59 @@
 :root, .dark {
   --radius: 0.875rem;
 
-  /* Backgrounds — deep navy with green tint */
-  --background: oklch(0.16 0.04 230);
-  --foreground: oklch(0.97 0.01 100);
+  /* Backgrounds — dark premium mais evidente */
+  --background: oklch(0.095 0.032 224);
+  --foreground: oklch(0.985 0.008 105);
 
-  --card: oklch(0.21 0.045 232);
+  --card: oklch(0.155 0.042 225);
   --card-foreground: oklch(0.97 0.01 100);
-  --popover: oklch(0.19 0.04 232);
+  --popover: oklch(0.13 0.04 225);
   --popover-foreground: oklch(0.97 0.01 100);
 
   /* Primary — bandeira verde vibrante */
-  --primary: oklch(0.72 0.20 150);
-  --primary-foreground: oklch(0.14 0.04 220);
-  --primary-glow: oklch(0.82 0.21 145);
+  --primary: oklch(0.78 0.22 148);
+  --primary-foreground: oklch(0.08 0.025 220);
+  --primary-glow: oklch(0.88 0.24 145);
 
   /* Gold accent */
-  --gold: oklch(0.84 0.16 88);
-  --gold-foreground: oklch(0.16 0.05 70);
+  --gold: oklch(0.88 0.17 86);
+  --gold-foreground: oklch(0.12 0.04 70);
 
-  --secondary: oklch(0.27 0.05 232);
+  --secondary: oklch(0.20 0.045 225);
   --secondary-foreground: oklch(0.95 0.01 100);
 
-  --muted: oklch(0.25 0.04 232);
-  --muted-foreground: oklch(0.72 0.03 230);
+  --muted: oklch(0.18 0.038 225);
+  --muted-foreground: oklch(0.78 0.025 220);
 
-  --accent: oklch(0.55 0.20 250);
+  --accent: oklch(0.63 0.22 252);
   --accent-foreground: oklch(0.97 0.01 100);
 
   --destructive: oklch(0.62 0.24 27);
   --destructive-foreground: oklch(0.98 0.01 100);
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.72 0.20 150 / 60%);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.78 0.22 148 / 70%);
 
-  --glass: oklch(0.25 0.04 232 / 50%);
-  --glass-border: oklch(1 0 0 / 14%);
+  --glass: oklch(0.15 0.04 225 / 72%);
+  --glass-border: oklch(1 0 0 / 18%);
 
-  --sidebar: oklch(0.19 0.04 232);
+  --sidebar: oklch(0.12 0.038 225);
   --sidebar-foreground: oklch(0.95 0.01 100);
-  --sidebar-primary: oklch(0.72 0.20 150);
+  --sidebar-primary: oklch(0.78 0.22 148);
   --sidebar-primary-foreground: oklch(0.14 0.04 220);
-  --sidebar-accent: oklch(0.27 0.05 232);
+  --sidebar-accent: oklch(0.20 0.045 225);
   --sidebar-accent-foreground: oklch(0.97 0.01 100);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.72 0.20 150 / 60%);
 
   /* Gradients & effects */
-  --gradient-primary: linear-gradient(135deg, oklch(0.72 0.20 150), oklch(0.84 0.16 88));
-  --gradient-hero: radial-gradient(at 20% 10%, oklch(0.72 0.20 150 / 28%) 0px, transparent 50%),
-                   radial-gradient(at 80% 0%, oklch(0.55 0.20 250 / 22%) 0px, transparent 50%),
-                   radial-gradient(at 50% 100%, oklch(0.84 0.16 88 / 18%) 0px, transparent 50%);
-  --gradient-card: linear-gradient(135deg, oklch(1 0 0 / 6%), oklch(1 0 0 / 2%));
-  --shadow-glow: 0 0 60px -10px oklch(0.72 0.20 150 / 45%);
-  --shadow-elegant: 0 20px 60px -20px oklch(0 0 0 / 60%), 0 4px 12px -4px oklch(0 0 0 / 30%);
-  --shadow-gold: 0 0 50px -8px oklch(0.84 0.16 88 / 40%);
+  --gradient-primary: linear-gradient(135deg, oklch(0.78 0.22 148), oklch(0.88 0.17 86));
+  --gradient-hero: linear-gradient(135deg, oklch(0.08 0.03 225) 0%, oklch(0.12 0.045 218) 46%, oklch(0.075 0.025 230) 100%);
+  --gradient-card: linear-gradient(135deg, oklch(1 0 0 / 9%), oklch(0.78 0.22 148 / 6%));
+  --shadow-glow: 0 0 70px -12px oklch(0.78 0.22 148 / 65%);
+  --shadow-elegant: 0 28px 80px -24px oklch(0 0 0 / 85%), 0 8px 22px -10px oklch(0 0 0 / 55%);
+  --shadow-gold: 0 0 58px -10px oklch(0.88 0.17 86 / 55%);
 }
 
 @layer base {
@@ -120,7 +118,11 @@
 
   body {
     background-color: var(--color-background);
-    background-image: var(--gradient-hero);
+    background-image:
+      linear-gradient(oklch(1 0 0 / 4%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 4%) 1px, transparent 1px),
+      var(--gradient-hero);
+    background-size: 42px 42px, 42px 42px, 100% 100%;
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -157,7 +159,7 @@
     border: 1px solid var(--glass-border);
   }
   .glass-strong {
-    background: oklch(0.21 0.045 232 / 78%);
+    background: oklch(0.125 0.04 225 / 88%);
     backdrop-filter: blur(28px) saturate(1.4);
     -webkit-backdrop-filter: blur(28px) saturate(1.4);
     border: 1px solid var(--glass-border);
