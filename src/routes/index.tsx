@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Copa 2026 — Hub Oficial" },
-      { name: "description", content: "48 seleções, 16 estádios, 3 países. A maior Copa do Mundo da história." },
+      { title: "Figurinhas Extras Copa 2026 — PDF Oficial para Imprimir" },
+      { name: "description", content: "PDF com todas as figurinhas extras do álbum da Copa do Mundo 2026. Pronto para imprimir em casa. Acesso liberado via chave única." },
     ],
   }),
   component: Index,
