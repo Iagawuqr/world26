@@ -33,26 +33,27 @@ function Index() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6">
               <Sparkles className="h-3 w-3 text-gold" />
-              FIFA World Cup · 11 jun – 19 jul 2026
+              PDF Oficial · Figurinhas Extras Copa 2026
             </div>
             <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-bold tracking-tight leading-[0.95]">
-              A <span className="gradient-text">Copa</span> que vai
-              <br /> reescrever a história.
+              Complete seu <span className="gradient-text">álbum</span>
+              <br /> da Copa 2026.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              48 seleções. 16 estádios em 3 países. Uma plataforma única para acompanhar
-              tudo — e o conteúdo exclusivo só com sua chave de acesso.
+              PDF com <strong className="text-foreground">todas as figurinhas extras</strong> do álbum oficial,
+              prontas para imprimir em casa. Acesso liberado por chave única — sem assinatura, sem espera.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground border-0 shadow-glow h-12 px-7">
                 <Link to="/login">
-                  Acessar plataforma <ArrowRight className="ml-1 h-4 w-4" />
+                  Resgatar minha chave <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-7 glass border-white/15 hover:bg-white/5">
-                <a href="#selecoes">Ver seleções</a>
+                <a href="#como-funciona">Como funciona</a>
               </Button>
             </div>
+
 
             <div className="mt-16 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
               {[
