@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Trophy, Sparkles, Shield, Zap, ArrowRight, MapPin, Users } from "lucide-react";
+import { Trophy, Sparkles, Shield, Zap, ArrowRight, MapPin, Users, FileText, Printer, Lock } from "lucide-react";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { TEAMS, STADIUMS, GROUPS, teamsByGroup } from "@/lib/copa-data";
