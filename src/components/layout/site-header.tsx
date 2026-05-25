@@ -28,8 +28,8 @@ export function SiteHeader() {
 
           <nav className="hidden md:flex items-center gap-1">
             <NavLink to="/">Início</NavLink>
-            <NavLink to="/selecoes">Seleções</NavLink>
-            <NavLink to="/estadios">Estádios</NavLink>
+            <NavLink to="/" hash="selecoes">Seleções</NavLink>
+            <NavLink to="/" hash="estadios">Estádios</NavLink>
             {user && <NavLink to="/dashboard">Painel</NavLink>}
             {role === "admin" && <NavLink to="/admin">Admin</NavLink>}
           </nav>
