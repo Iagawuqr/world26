@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Trophy, Sparkles, Shield, Zap, ArrowRight, MapPin, Users } from "lucide-react";
+import { Trophy, Sparkles, Shield, Zap, ArrowRight, MapPin, Users, FileText, Printer, Lock } from "lucide-react";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { TEAMS, STADIUMS, GROUPS, teamsByGroup } from "@/lib/copa-data";
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Copa 2026 — Hub Oficial" },
-      { name: "description", content: "48 seleções, 16 estádios, 3 países. A maior Copa do Mundo da história." },
+      { title: "Figurinhas Extras Copa 2026 — PDF Oficial para Imprimir" },
+      { name: "description", content: "PDF com todas as figurinhas extras do álbum da Copa do Mundo 2026. Pronto para imprimir em casa. Acesso liberado via chave única." },
     ],
   }),
   component: Index,
@@ -33,32 +33,33 @@ function Index() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6">
               <Sparkles className="h-3 w-3 text-gold" />
-              FIFA World Cup · 11 jun – 19 jul 2026
+              PDF Oficial · Figurinhas Extras Copa 2026
             </div>
             <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display font-bold tracking-tight leading-[0.95]">
-              A <span className="gradient-text">Copa</span> que vai
-              <br /> reescrever a história.
+              Complete seu <span className="gradient-text">álbum</span>
+              <br /> da Copa 2026.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              48 seleções. 16 estádios em 3 países. Uma plataforma única para acompanhar
-              tudo — e o conteúdo exclusivo só com sua chave de acesso.
+              PDF com <strong className="text-foreground">todas as figurinhas extras</strong> do álbum oficial,
+              prontas para imprimir em casa. Acesso liberado por chave única — sem assinatura, sem espera.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg" className="gradient-primary text-primary-foreground border-0 shadow-glow h-12 px-7">
                 <Link to="/login">
-                  Acessar plataforma <ArrowRight className="ml-1 h-4 w-4" />
+                  Resgatar minha chave <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-7 glass border-white/15 hover:bg-white/5">
-                <a href="#selecoes">Ver seleções</a>
+                <a href="#como-funciona">Como funciona</a>
               </Button>
             </div>
 
+
             <div className="mt-16 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
               {[
-                { v: "48", l: "Seleções" },
-                { v: "16", l: "Estádios" },
-                { v: "104", l: "Partidas" },
+                { v: "100%", l: "Figurinhas extras" },
+                { v: "PDF", l: "Pronto p/ imprimir" },
+                { v: "1 chave", l: "Acesso vitalício" },
               ].map((s, i) => (
                 <motion.div
                   key={s.l}
@@ -67,40 +68,48 @@ function Index() {
                   transition={{ delay: 0.3 + i * 0.1 }}
                   className="glass rounded-2xl p-5"
                 >
-                  <div className="text-4xl font-display font-bold gradient-text">{s.v}</div>
+                  <div className="text-3xl sm:text-4xl font-display font-bold gradient-text">{s.v}</div>
                   <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">{s.l}</div>
                 </motion.div>
               ))}
             </div>
+
           </motion.div>
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-6 grid md:grid-cols-3 gap-5">
-          {[
-            { icon: Shield, t: "Acesso protegido", d: "Conteúdo liberado apenas com chave de uso único. Criptografia ponta-a-ponta." },
-            { icon: Zap, t: "Performance premium", d: "Carregamento instantâneo, animações fluidas, otimizado para qualquer tela." },
-            { icon: Trophy, t: "Curadoria oficial", d: "48 seleções, 16 estádios, estatísticas em tempo real e materiais exclusivos." },
-          ].map((f, i) => (
-            <motion.div
-              key={f.t}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="glass rounded-2xl p-6 hover:shadow-glow transition-shadow"
-            >
-              <div className="h-11 w-11 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-                <f.icon className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold">{f.t}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{f.d}</p>
-            </motion.div>
-          ))}
+      {/* COMO FUNCIONA */}
+      <section id="como-funciona" className="py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-[0.2em] text-gold mb-2">Como funciona</div>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold">Três passos pra completar seu álbum</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              { icon: Lock, t: "1. Resgate sua chave", d: "Faça login e insira a chave de 16 caracteres no painel pra liberar o PDF." },
+              { icon: FileText, t: "2. Visualize protegido", d: "Veja todas as figurinhas extras no visualizador seguro — com marca d'água e anti-cópia." },
+              { icon: Printer, t: "3. Imprima em casa", d: "Páginas em A4, alta resolução. Recorte, cole no álbum e complete a coleção." },
+            ].map((f, i) => (
+              <motion.div
+                key={f.t}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="glass rounded-2xl p-6 hover:shadow-glow transition-shadow"
+              >
+                <div className="h-11 w-11 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+                  <f.icon className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{f.t}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">{f.d}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
+
 
       {/* SELECOES */}
       <section id="selecoes" className="py-20">
