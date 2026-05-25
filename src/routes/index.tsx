@@ -78,31 +78,38 @@ function Index() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-6 grid md:grid-cols-3 gap-5">
-          {[
-            { icon: Shield, t: "Acesso protegido", d: "Conteúdo liberado apenas com chave de uso único. Criptografia ponta-a-ponta." },
-            { icon: Zap, t: "Performance premium", d: "Carregamento instantâneo, animações fluidas, otimizado para qualquer tela." },
-            { icon: Trophy, t: "Curadoria oficial", d: "48 seleções, 16 estádios, estatísticas em tempo real e materiais exclusivos." },
-          ].map((f, i) => (
-            <motion.div
-              key={f.t}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="glass rounded-2xl p-6 hover:shadow-glow transition-shadow"
-            >
-              <div className="h-11 w-11 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-                <f.icon className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold">{f.t}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{f.d}</p>
-            </motion.div>
-          ))}
+      {/* COMO FUNCIONA */}
+      <section id="como-funciona" className="py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-[0.2em] text-gold mb-2">Como funciona</div>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold">Três passos pra completar seu álbum</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              { icon: Lock, t: "1. Resgate sua chave", d: "Faça login e insira a chave de 16 caracteres no painel pra liberar o PDF." },
+              { icon: FileText, t: "2. Visualize protegido", d: "Veja todas as figurinhas extras no visualizador seguro — com marca d'água e anti-cópia." },
+              { icon: Printer, t: "3. Imprima em casa", d: "Páginas em A4, alta resolução. Recorte, cole no álbum e complete a coleção." },
+            ].map((f, i) => (
+              <motion.div
+                key={f.t}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="glass rounded-2xl p-6 hover:shadow-glow transition-shadow"
+              >
+                <div className="h-11 w-11 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+                  <f.icon className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{f.t}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">{f.d}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
+
 
       {/* SELECOES */}
       <section id="selecoes" className="py-20">
