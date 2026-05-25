@@ -28,8 +28,8 @@ export function SiteHeader() {
 
           <nav className="hidden md:flex items-center gap-1">
             <NavLink to="/">Início</NavLink>
-            <NavLink to="/selecoes">Seleções</NavLink>
-            <NavLink to="/estadios">Estádios</NavLink>
+            <NavLink to="/" hash="selecoes">Seleções</NavLink>
+            <NavLink to="/" hash="estadios">Estádios</NavLink>
             {user && <NavLink to="/dashboard">Painel</NavLink>}
             {role === "admin" && <NavLink to="/admin">Admin</NavLink>}
           </nav>
@@ -67,8 +67,8 @@ export function SiteHeader() {
         {open && (
           <div className="md:hidden mt-2 glass-strong rounded-2xl p-3 flex flex-col gap-1">
             <NavLink to="/" mobile onClick={() => setOpen(false)}>Início</NavLink>
-            <NavLink to="/selecoes" mobile onClick={() => setOpen(false)}>Seleções</NavLink>
-            <NavLink to="/estadios" mobile onClick={() => setOpen(false)}>Estádios</NavLink>
+            <NavLink to="/" hash="selecoes" mobile onClick={() => setOpen(false)}>Seleções</NavLink>
+            <NavLink to="/" hash="estadios" mobile onClick={() => setOpen(false)}>Estádios</NavLink>
             {user && <NavLink to="/dashboard" mobile onClick={() => setOpen(false)}>Painel</NavLink>}
             {role === "admin" && <NavLink to="/admin" mobile onClick={() => setOpen(false)}>Admin</NavLink>}
             {user ? (
@@ -91,11 +91,13 @@ export function SiteHeader() {
 
 function NavLink({
   to,
+  hash,
   children,
   mobile,
   onClick,
 }: {
   to: string;
+  hash?: string;
   children: React.ReactNode;
   mobile?: boolean;
   onClick?: () => void;
@@ -103,6 +105,7 @@ function NavLink({
   return (
     <Link
       to={to}
+      hash={hash}
       onClick={onClick}
       className={cn(
         "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
@@ -110,9 +113,10 @@ function NavLink({
         mobile && "w-full"
       )}
       activeProps={{ className: "text-foreground bg-white/5" }}
-      activeOptions={{ exact: to === "/" }}
+      activeOptions={{ exact: to === "/" && !hash }}
     >
       {children}
     </Link>
   );
 }
+
