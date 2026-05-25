@@ -24,7 +24,7 @@ function AdminLayout() {
     if (loading) return;
     if (role === "admin") {
       setVerified(true);
-    } else if (role && role !== "admin") {
+    } else if (role) {
       window.location.href = "/dashboard";
     }
   }, [role, loading]);
