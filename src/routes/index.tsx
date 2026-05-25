@@ -57,9 +57,9 @@ function Index() {
 
             <div className="mt-16 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
               {[
-                { v: "48", l: "Seleções" },
-                { v: "16", l: "Estádios" },
-                { v: "104", l: "Partidas" },
+                { v: "100%", l: "Figurinhas extras" },
+                { v: "PDF", l: "Pronto p/ imprimir" },
+                { v: "1 chave", l: "Acesso vitalício" },
               ].map((s, i) => (
                 <motion.div
                   key={s.l}
@@ -68,11 +68,12 @@ function Index() {
                   transition={{ delay: 0.3 + i * 0.1 }}
                   className="glass rounded-2xl p-5"
                 >
-                  <div className="text-4xl font-display font-bold gradient-text">{s.v}</div>
+                  <div className="text-3xl sm:text-4xl font-display font-bold gradient-text">{s.v}</div>
                   <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">{s.l}</div>
                 </motion.div>
               ))}
             </div>
+
           </motion.div>
         </div>
       </section>
