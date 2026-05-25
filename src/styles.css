@@ -146,7 +146,7 @@
 
   /* Selection */
   ::selection {
-    background: oklch(0.72 0.20 150 / 35%);
+    background: oklch(0.74 0.19 150 / 35%);
     color: var(--color-foreground);
   }
 }
