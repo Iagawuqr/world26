@@ -1,11 +1,12 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const requireAdmin = createMiddleware({ type: "function" })
   .middleware([requireSupabaseAuth])
   .server(async ({ next, context }) => {
-    const { supabase, userId } = context as { supabase: any; userId: string };
-    const { data, error } = await supabase
+    const { userId } = context as { userId: string };
+    const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
