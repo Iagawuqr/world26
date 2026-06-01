@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { syncMyAccount } from "@/lib/auth.functions";
 
 type Role = "admin" | "user" | null;
 
@@ -16,6 +18,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const syncAccount = useServerFn(syncMyAccount);
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<Role>(null);
@@ -57,6 +60,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function fetchRole(userId: string) {
     setRoleLoading(true);
+    const currentUser = user?.id === userId ? user : null;
+    if (currentUser) {
+      try {
+        await syncAccount({
+          data: {
+            email: currentUser.email ?? null,
+            fullName:
+              currentUser.user_metadata?.full_name ?? currentUser.user_metadata?.name ?? null,
+            avatarUrl: currentUser.user_metadata?.avatar_url ?? null,
+          },
+        });
+      } catch {
+        // Continua para tentar ler o cargo existente.
+      }
+    }
     const { data, error } = await supabase
       .from("user_roles")
       .select("role")
