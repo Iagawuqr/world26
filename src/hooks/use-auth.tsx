@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoleLoading(true);
         // defer DB call
         setTimeout(() => {
-          void fetchRole(newSession.user.id);
+          void fetchRole(newSession.user);
         }, 0);
       } else {
         setRole(null);
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
-        void fetchRole(data.session.user.id);
+        void fetchRole(data.session.user);
       } else {
         setRole(null);
         setRoleLoading(false);
@@ -58,27 +58,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function fetchRole(userId: string) {
+  async function fetchRole(account: User) {
     setRoleLoading(true);
-    const currentUser = user?.id === userId ? user : null;
-    if (currentUser) {
-      try {
-        await syncAccount({
-          data: {
-            email: currentUser.email ?? null,
-            fullName:
-              currentUser.user_metadata?.full_name ?? currentUser.user_metadata?.name ?? null,
-            avatarUrl: currentUser.user_metadata?.avatar_url ?? null,
-          },
-        });
-      } catch {
-        // Continua para tentar ler o cargo existente.
-      }
+    try {
+      await syncAccount({
+        data: {
+          email: account.email ?? null,
+          fullName: account.user_metadata?.full_name ?? account.user_metadata?.name ?? null,
+          avatarUrl: account.user_metadata?.avatar_url ?? null,
+        },
+      });
+    } catch {
+      // Continua para tentar ler o cargo existente.
     }
     const { data, error } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", userId)
+      .eq("user_id", account.id)
       .order("role", { ascending: true }); // admin < user alphabetically
 
     if (error) {
