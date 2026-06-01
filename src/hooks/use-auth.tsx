@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { syncMyAccount } from "@/lib/auth.functions";
 
 type Role = "admin" | "user" | null;
 
@@ -9,16 +11,19 @@ interface AuthContextValue {
   session: Session | null;
   role: Role;
   loading: boolean;
+  roleLoading: boolean;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const syncAccount = useServerFn(syncMyAccount);
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
     // 1. Set up listener FIRST
@@ -26,12 +31,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       if (newSession?.user) {
+        setRoleLoading(true);
         // defer DB call
         setTimeout(() => {
-          void fetchRole(newSession.user.id);
+          void fetchRole(newSession.user);
         }, 0);
       } else {
         setRole(null);
+        setRoleLoading(false);
       }
     });
 
@@ -40,7 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
-        void fetchRole(data.session.user.id);
+        void fetchRole(data.session.user);
+      } else {
+        setRole(null);
+        setRoleLoading(false);
       }
       setLoading(false);
     });
@@ -48,27 +58,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function fetchRole(userId: string) {
-    const { data } = await supabase
+  async function fetchRole(account: User) {
+    setRoleLoading(true);
+    try {
+      await syncAccount({
+        data: {
+          email: account.email ?? null,
+          fullName: account.user_metadata?.full_name ?? account.user_metadata?.name ?? null,
+          avatarUrl: account.user_metadata?.avatar_url ?? null,
+        },
+      });
+    } catch {
+      // Continua para tentar ler o cargo existente.
+    }
+    const { data, error } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", userId)
+      .eq("user_id", account.id)
       .order("role", { ascending: true }); // admin < user alphabetically
+
+    if (error) {
+      setRole(null);
+      setRoleLoading(false);
+      return;
+    }
+
     if (data && data.length > 0) {
       const isAdmin = data.some((r) => r.role === "admin");
       setRole(isAdmin ? "admin" : "user");
     } else {
       setRole("user");
     }
+    setRoleLoading(false);
   }
 
   async function signOut() {
     await supabase.auth.signOut();
     setRole(null);
+    setRoleLoading(false);
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, role, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, role, loading, roleLoading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
