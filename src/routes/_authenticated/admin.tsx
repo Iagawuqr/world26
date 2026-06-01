@@ -1,7 +1,9 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { LayoutGrid, Folder, Key, Users, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { checkIsAdmin } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — Copa 2026" }] }),
@@ -17,17 +19,30 @@ const NAV: { to: string; label: string; icon: typeof LayoutGrid; exact?: boolean
 
 function AdminLayout() {
   const { pathname } = useLocation();
-  const { role, loading, roleLoading } = useAuth();
+  const { user, loading, roleLoading } = useAuth();
+  const checkAdmin = useServerFn(checkIsAdmin);
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     if (loading || roleLoading) return;
-    if (role === "admin") {
-      setVerified(true);
-    } else if (role) {
-      window.location.href = "/dashboard";
+    if (!user) {
+      window.location.href = "/login";
+      return;
     }
-  }, [role, loading, roleLoading]);
+    let cancelled = false;
+    void checkAdmin()
+      .then((res) => {
+        if (cancelled) return;
+        if (res.isAdmin) setVerified(true);
+        else window.location.href = "/dashboard";
+      })
+      .catch(() => {
+        if (!cancelled) window.location.href = "/dashboard";
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [checkAdmin, user, loading, roleLoading]);
 
   // Sem flash: nada na tela até a verificação concluir
   if (!verified) return <div className="min-h-[60vh]" aria-hidden />;
