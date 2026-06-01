@@ -17,17 +17,17 @@ const NAV: { to: string; label: string; icon: typeof LayoutGrid; exact?: boolean
 
 function AdminLayout() {
   const { pathname } = useLocation();
-  const { role, loading } = useAuth();
+  const { role, loading, roleLoading } = useAuth();
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || roleLoading) return;
     if (role === "admin") {
       setVerified(true);
     } else if (role) {
       window.location.href = "/dashboard";
     }
-  }, [role, loading]);
+  }, [role, loading, roleLoading]);
 
   // Sem flash: nada na tela até a verificação concluir
   if (!verified) return <div className="min-h-[60vh]" aria-hidden />;
