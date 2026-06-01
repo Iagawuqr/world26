@@ -9,6 +9,7 @@ interface AuthContextValue {
   session: Session | null;
   role: Role;
   loading: boolean;
+  roleLoading: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
     // 1. Set up listener FIRST
@@ -26,12 +28,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       if (newSession?.user) {
+        setRoleLoading(true);
         // defer DB call
         setTimeout(() => {
           void fetchRole(newSession.user.id);
         }, 0);
       } else {
         setRole(null);
+        setRoleLoading(false);
       }
     });
 
@@ -41,6 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
         void fetchRole(data.session.user.id);
+      } else {
+        setRole(null);
+        setRoleLoading(false);
       }
       setLoading(false);
     });
@@ -49,26 +56,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function fetchRole(userId: string) {
-    const { data } = await supabase
+    setRoleLoading(true);
+    const { data, error } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .order("role", { ascending: true }); // admin < user alphabetically
+
+    if (error) {
+      setRole(null);
+      setRoleLoading(false);
+      return;
+    }
+
     if (data && data.length > 0) {
       const isAdmin = data.some((r) => r.role === "admin");
       setRole(isAdmin ? "admin" : "user");
     } else {
       setRole("user");
     }
+    setRoleLoading(false);
   }
 
   async function signOut() {
     await supabase.auth.signOut();
     setRole(null);
+    setRoleLoading(false);
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, role, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, role, loading, roleLoading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
