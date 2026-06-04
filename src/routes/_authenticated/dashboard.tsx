@@ -39,8 +39,11 @@ function Dashboard() {
           <h1 className="text-2xl sm:text-3xl font-display font-bold">{name}</h1>
         </div>
         {role === "admin" && (
-          <Link to="/admin" className="ml-auto inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-gold glass px-3 py-1.5 rounded-full">
-            <ShieldCheck className="h-3 w-3" /> Modo admin
+          <Link
+            to="/admin"
+            className="ml-auto inline-flex items-center gap-2 rounded-xl gradient-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow transition-opacity hover:opacity-95"
+          >
+            <ShieldCheck className="h-4 w-4" /> Entrar no Admin
           </Link>
         )}
       </motion.div>

@@ -1,18 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createHash, randomBytes } from "crypto";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sem 0/O/1/I
-function genKey(len = 16): string {
+async function genKey(len = 16): Promise<string> {
+  const { randomBytes } = await import("crypto");
   const bytes = randomBytes(len);
   let out = "";
   for (let i = 0; i < len; i++) out += ALPHABET[bytes[i] % ALPHABET.length];
   return out;
 }
-function hashKey(key: string): string {
+async function hashKey(key: string): Promise<string> {
+  const { createHash } = await import("crypto");
   return createHash("sha256").update(key).digest("hex");
 }
 function normalize(key: string): string {
@@ -26,10 +26,11 @@ export const redeemKey = createServerFn({ method: "POST" })
     z.object({ key: z.string().min(8).max(64) }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const clean = normalize(data.key);
     if (clean.length !== 16) throw new Error("A chave deve ter 16 caracteres.");
-    const hash = hashKey(clean);
+    const hash = await hashKey(clean);
 
     // checar perfil ativo / pause
     const { data: profile } = await supabaseAdmin
@@ -81,22 +82,23 @@ export const generateKeys = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const expiresAt = data.expiresInDays
       ? new Date(Date.now() + data.expiresInDays * 86400 * 1000).toISOString()
       : null;
     const generated: string[] = [];
-    const rows = Array.from({ length: data.count }, () => {
-      const k = genKey(16);
+    const rows = await Promise.all(Array.from({ length: data.count }, async () => {
+      const k = await genKey(16);
       generated.push(k);
       return {
         folder_id: data.folderId,
         created_by: userId,
-        key_hash: hashKey(k),
+        key_hash: await hashKey(k),
         key_prefix: k.slice(0, 4),
         expires_at: expiresAt,
       };
-    });
+    }));
     const { error } = await supabaseAdmin.from("download_keys").insert(rows);
     if (error) throw new Error("Falha ao gerar chaves.");
 
@@ -118,6 +120,7 @@ export const listKeys = createServerFn({ method: "GET" })
     z.object({ folderId: z.string().uuid().optional() }).parse(input ?? {}),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin
       .from("download_keys")
       .select("id, key_prefix, folder_id, used_by, used_at, expires_at, revoked, created_at")
@@ -134,6 +137,7 @@ export const revokeKey = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((input: { keyId: string }) => z.object({ keyId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const { error } = await supabaseAdmin
       .from("download_keys")

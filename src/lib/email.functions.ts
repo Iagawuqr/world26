@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const FROM = "Copa 2026 <onboarding@resend.dev>";
 
@@ -45,6 +44,7 @@ export const sendKeyByEmail = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // chave bruta não pode ser recuperada (armazenamos hash); enviamos um link de resgate
     // OU, se você usa chaves "claras" no momento da criação, passe-as via outra rota.
     // Aqui mandamos um aviso/instrução de resgate vinculado ao prefixo.

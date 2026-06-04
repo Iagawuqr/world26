@@ -2,11 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const BUCKET = "secure-files";
 
 async function userHasFolderAccess(userId: string, folderId: string): Promise<boolean> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: adminRow } = await supabaseAdmin
     .from("user_roles")
     .select("role")
@@ -32,6 +32,7 @@ export const listFolderFiles = createServerFn({ method: "POST" })
     z.object({ folderId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     if (!(await userHasFolderAccess(userId, data.folderId))) {
       throw new Error("Você não tem acesso a esta pasta.");
@@ -56,6 +57,7 @@ export const getSignedPreviewUrl = createServerFn({ method: "POST" })
     z.object({ fileId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const { data: file } = await supabaseAdmin
       .from("files")
@@ -112,6 +114,7 @@ export const registerFile = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("files").insert({
       folder_id: data.folderId,
       name: data.name,
@@ -129,6 +132,7 @@ export const deleteFile = createServerFn({ method: "POST" })
     z.object({ fileId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: file } = await supabaseAdmin
       .from("files")
       .select("storage_path")
@@ -147,6 +151,7 @@ export const adminListFiles = createServerFn({ method: "POST" })
     z.object({ folderId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: files } = await supabaseAdmin
       .from("files")
       .select("id, name, mime_type, size_bytes, created_at, storage_path")
