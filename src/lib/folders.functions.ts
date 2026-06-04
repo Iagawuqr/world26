@@ -2,12 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 /* ============ USER: pastas que eu desbloquei ============ */
 export const listMyFolders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const { data: keys } = await supabaseAdmin
       .from("download_keys")
@@ -28,6 +28,7 @@ export const listMyFolders = createServerFn({ method: "GET" })
 export const adminListFolders = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("folders")
       .select("id, name, description, created_at")
@@ -60,6 +61,7 @@ export const createFolder = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const { data: row, error } = await supabaseAdmin
       .from("folders")
@@ -76,6 +78,7 @@ export const deleteFolder = createServerFn({ method: "POST" })
     z.object({ folderId: z.string().uuid() }).parse(input),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // apaga arquivos do storage
     const { data: files } = await supabaseAdmin
       .from("files")
