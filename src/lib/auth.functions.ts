@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const syncMyAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -15,6 +14,7 @@ export const syncMyAccount = createServerFn({ method: "POST" })
       .parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId, claims } = context as { userId: string; claims?: Record<string, unknown> };
     const email = data.email ?? (typeof claims?.email === "string" ? claims.email : "");
 
@@ -55,12 +55,17 @@ export const syncMyAccount = createServerFn({ method: "POST" })
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
-    const { data } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
+    if (error) {
+      console.error("Admin permission check failed", { userId, message: error.message });
+      return { isAdmin: false, error: "permission_check_failed" };
+    }
     return { isAdmin: !!data };
   });
