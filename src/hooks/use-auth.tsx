@@ -61,13 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function fetchRole(account: User) {
     setRoleLoading(true);
     try {
-      await syncAccount({
+      const synced = await syncAccount({
         data: {
           email: account.email ?? null,
           fullName: account.user_metadata?.full_name ?? account.user_metadata?.name ?? null,
           avatarUrl: account.user_metadata?.avatar_url ?? null,
         },
       });
+      if (synced?.role === "admin" || synced?.role === "user") {
+        setRole(synced.role);
+        setRoleLoading(false);
+        return;
+      }
     } catch {
       // Continua para tentar ler o cargo existente.
     }
