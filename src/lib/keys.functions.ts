@@ -3,7 +3,6 @@ import { z } from "zod";
 import { createHash, randomBytes } from "crypto";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sem 0/O/1/I
 function genKey(len = 16): string {
@@ -26,6 +25,7 @@ export const redeemKey = createServerFn({ method: "POST" })
     z.object({ key: z.string().min(8).max(64) }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const clean = normalize(data.key);
     if (clean.length !== 16) throw new Error("A chave deve ter 16 caracteres.");
@@ -81,6 +81,7 @@ export const generateKeys = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const expiresAt = data.expiresInDays
       ? new Date(Date.now() + data.expiresInDays * 86400 * 1000).toISOString()
@@ -118,6 +119,7 @@ export const listKeys = createServerFn({ method: "GET" })
     z.object({ folderId: z.string().uuid().optional() }).parse(input ?? {}),
   )
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin
       .from("download_keys")
       .select("id, key_prefix, folder_id, used_by, used_at, expires_at, revoked, created_at")
@@ -134,6 +136,7 @@ export const revokeKey = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((input: { keyId: string }) => z.object({ keyId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const { error } = await supabaseAdmin
       .from("download_keys")
