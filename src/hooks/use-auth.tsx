@@ -74,27 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
     } catch {
-      // Continua para tentar ler o cargo existente.
-    }
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", account.id)
-      .order("role", { ascending: true }); // admin < user alphabetically
-
-    if (error) {
       setRole(null);
       setRoleLoading(false);
       return;
     }
-
-    if (data && data.length > 0) {
-      const isAdmin = data.some((r) => r.role === "admin");
-      setRole(isAdmin ? "admin" : "user");
-    } else {
-      setRole("user");
-    }
-    setRoleLoading(false);
   }
 
   async function signOut() {
