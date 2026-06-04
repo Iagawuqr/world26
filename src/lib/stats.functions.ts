@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const myDashboardStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId } = context as { userId: string };
     const { data: keys } = await supabaseAdmin
       .from("download_keys")
@@ -38,6 +38,7 @@ export const myDashboardStats = createServerFn({ method: "GET" })
 export const adminStats = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [users, folders, files, keys, redeemed, downloads] = await Promise.all([
       supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),
       supabaseAdmin.from("folders").select("id", { count: "exact", head: true }),
