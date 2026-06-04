@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const adminListUsers = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: profiles } = await supabaseAdmin
       .from("profiles")
       .select("id, email, full_name, avatar_url, is_active, downloads_paused, created_at")
@@ -33,6 +33,7 @@ export const toggleUserActive = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), active: z.boolean() }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId: actor } = context as { userId: string };
     const { error } = await supabaseAdmin
       .from("profiles")
@@ -54,6 +55,7 @@ export const pauseUserDownloads = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), paused: z.boolean() }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId: actor } = context as { userId: string };
     const { error } = await supabaseAdmin
       .from("profiles")
@@ -75,6 +77,7 @@ export const setUserRole = createServerFn({ method: "POST" })
     z.object({ userId: z.string().uuid(), makeAdmin: z.boolean() }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { userId: actor } = context as { userId: string };
     if (data.makeAdmin) {
       const { error } = await supabaseAdmin
