@@ -138,27 +138,30 @@ function FolderFiles({ folderId }: { folderId: string }) {
   const onDrop = useCallback(
     async (files: File[]) => {
       for (const file of files) {
-        const ext = file.name.split(".").pop() ?? "bin";
-        const path = `${folderId}/${crypto.randomUUID()}.${ext}`;
+        const ext = (file.name.split(".").pop() ?? "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const path = `${folderId}/${crypto.randomUUID()}.${ext || "bin"}`;
+        const contentType = file.type && file.type.length > 0 ? file.type : "application/octet-stream";
         setUploading((p) => [...p, file.name]);
         try {
           const { error: upErr } = await supabase.storage
             .from("secure-files")
-            .upload(path, file, { contentType: file.type, upsert: false });
-          if (upErr) throw upErr;
+            .upload(path, file, { contentType, upsert: false, cacheControl: "3600" });
+          if (upErr) throw new Error(upErr.message || "Falha no upload (verifique se você é admin).");
           await register({
             data: {
               folderId,
               name: file.name,
               storagePath: path,
-              mimeType: file.type || "application/octet-stream",
+              mimeType: contentType,
               sizeBytes: file.size,
             },
           });
           toast.success(`${file.name} enviado`);
         } catch (err: any) {
-          toast.error(`Falha no upload de ${file.name}: ${err.message}`);
+          console.error("Upload failed", { name: file.name, error: err });
+          toast.error(`Falha no upload de ${file.name}: ${err.message ?? "erro desconhecido"}`);
         } finally {
+
           setUploading((p) => p.filter((n) => n !== file.name));
           qc.invalidateQueries({ queryKey: ["admin-files", folderId] });
           qc.invalidateQueries({ queryKey: ["admin-folders"] });
